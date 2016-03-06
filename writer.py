@@ -37,9 +37,8 @@ def main():
                         # batch.append(Relationship(latterNode, "INTERSECTS WITH", newNode))
 
                         latterQuery = "match(n:Node { shape_pt_sequence: %s})" % (str(int(shape_pt_sequence) - 1))
-                        relationship = "MERGE (n)-[:INTERSECTS_WITH]-(routeNode)"
+                        relationship = "MERGE (n)-[:IS_PART_OF]-(routeNode)"
                         query = "%s merge(routeNode:Node {shape_pt_lat: %s, shape_pt_long: %s, shape_id: \"%s\", shape_pt_sequence: %s}) %s" % (latterQuery, shape_pt_lat, shape_pt_long, shape_id, shape_pt_sequence,relationship)
-                        print query
                         batch.append(query)
                     else:
                         query = "merge(routeNode:Node {shape_pt_lat: %s, shape_pt_long: %s, shape_id: \"%s\", shape_pt_sequence: %s})" % (shape_pt_lat, shape_pt_long, shape_id, shape_pt_sequence)
