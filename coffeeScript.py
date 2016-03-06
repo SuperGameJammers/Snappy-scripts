@@ -3,12 +3,14 @@ from py2neo import authenticate, Graph, Node, Relationship
 import time
 import os
 import math
+import numpy as np
 
 
 def main():
     authenticate("http://localhost:7474/browser/", "test", "test")
-    shapes = "./intersections.txt"
-    path = os.path.join(os.path.dirname(__file__), shapes)
+    coffee = "./CoffeeSeparatedValues.csv"
+
+    path = os.path.join(os.path.dirname(__file__), coffee)
     graph = Graph()
     authenticate("localhost:7474", "neo4j", "test")
     print graph
@@ -29,15 +31,19 @@ def main():
                     long = strip(row[3])
                     trip2 = strip(row[4])
                     sequence2 = strip(row[5])
+                    lat2 = strip(row[6])
+                    long2 = strip(row[7])
+                    if(trip1!= trip2):
+                        latterQuery = "match(n:Node { shape_pt_sequence: %s})" % (sequence1)
+                        query = "match(routeNode:Node { shape_pt_sequence: %s})" % (sequence2)
+                        relationship = "CREATE ( (n)-[:INTERSECTS_WITH {distance: %d}]->(routeNode))" % (points2distance([float(lat),float(long)],[float(lat2), float(long2)]))
 
-                    latterQuery = "match(n:Node { shape_pt_sequence: %s})" % (sequence1)
-                    query = "match(routeNode:Node { shape_pt_sequence: %s})" % (sequence2)
-                    # print "sequence " + sequence1
-                    # print "sequence2 " + sequence2
+                        query = "%s %s %s" % (latterQuery, query, relationship)
+                        batch.append(query)
 
-                    relationship = "MERGE( (n)-[:INTERSECTS_WITH {distance: %d}]-(routeNode))" % (1)
-                    query = "%s %s %s" % (latterQuery, query, relationship)
-                    batch.append(query)
+                        relationship = "CREATE ( (routeNode)-[:INTERSECTS_WITH {distance: %d}]->(n))" % (points2distance([float(lat),float(long)],[float(lat2), float(long2)]))
+                        query = "%s %s %s" % (latterQuery, query, relationship)
+                        batch.append(query)
 
                     i += 1
                     j += 1
@@ -59,7 +65,9 @@ def main():
 
 def strip(string): return ''.join(
         [c if 0 < ord(c) < 128 else ' ' for c in string])  # removes non utf-8 chars from string within cell
-def points2distance(start,  end):
+
+
+def points2distance(start, end):
     """
       Calculate distance (in kilometers) between two points given as (long, latt) pairs
       based on Haversine formula (http://en.wikipedia.org/wiki/Haversine_formula).
@@ -78,9 +86,9 @@ def points2distance(start,  end):
     end_latt = math.radians(end[1])
     d_latt = end_latt - start_latt
     d_long = end_long - start_long
-    a = math.sin(d_latt/2)**2 + math.cos(start_latt) * math.cos(end_latt) * math.sin(d_long/2)**2
-    c = 2 * math.atan2(math.sqrt(a),  math.sqrt(1-a))
-    return  math.floor(6371000 * c)
+    a = math.sin(d_latt / 2) ** 2 + math.cos(start_latt) * math.cos(end_latt) * math.sin(d_long / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return math.floor(6371000 * c)
 
 
 if __name__ == '__main__':
