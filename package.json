@@ -1,0 +1,23 @@
+{
+  "name": "intersedge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "gtfs": "^0.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SuperGameJammers/intersedge.git"
+  },
+  "author": "Dan Amador",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SuperGameJammers/intersedge/issues"
+  },
+  "homepage": "https://github.com/SuperGameJammers/intersedge#readme"
+}
